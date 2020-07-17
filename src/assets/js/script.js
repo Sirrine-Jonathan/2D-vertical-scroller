@@ -26,7 +26,7 @@ class Wormy {
 		this.states = ['airborne'];
 		this.possible_states = {
 			moving: ['climbing'],
-			airborne: ['climbing'],
+			airborne: [],
 			climbing: ['moving', 'stabbing'],
 			stabbing: [],
 		};
@@ -84,19 +84,10 @@ class Wormy {
 		this.sprite.y = 32 * 7;
 		this.sprite.vx = 0;
 		this.sprite.vy = 0;
-		this.max_vx = 5;
-		this.min_vx = -5;
-		this.speed = 1;
+		this.max_vx = 3;
+		this.min_vx = -3;
+		this.speed = 0.5;
 		app.stage.addChild(this.sprite);
-	}
-
-	getStateIndex = (state) => {
-		let index = this.states.indexOf(state);
-		if (index >= 0){
-			return index;
-		} else {
-			return null;
-		}
 	}
 
 	isState = (state) => {
@@ -129,8 +120,12 @@ class Wormy {
 	updateMotion = () => {
 
 		// Apply gravity
-		if (this.game.should_apply_gravity(this.sprite)){
+		if (
+			this.game.should_apply_gravity(this.sprite) &&
+			!this.isState('climbing')
+		){
 			this.game.apply_gravity(this.sprite);
+			this.addState('airborne');
 		} else {
 			this.removeState('airborne');
 			this.sprite.vy = 0;
@@ -167,10 +162,7 @@ class Wormy {
 				){
 					this.addState('climbing')
 					this.sprite.vy = -1;
-				} else if (
-					!this.isState('airborne') &&
-					this.canState('airborne')
-				) {
+				} else if (this.canState('airborne')) {
 					this.addState('airborne');
 					if (this.isState('climbing')){
 						this.sprite.vy += -(Math.abs(this.JUMP_VELOCITY) / 2);
@@ -254,6 +246,7 @@ class Wormy {
 	update = (delta) => {
 		this.updateAnimation();
 		this.updateMotion();
+		//console.log(this.game.keys);
 	}
 }
 
@@ -352,9 +345,11 @@ class Game{
 	setup = () => {
 		// setup key listeners
 		window.addEventListener('keydown', (e) => {
+			console.log('down', e.key);
 			this.keys[e.key] = true;
 		})
 		window.addEventListener('keyup', (e) => {
+			console.log('up', e.key);
 			this.keys[e.key] = false;
 		})
 
