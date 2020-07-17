@@ -2,10 +2,9 @@
 <html lang="hu">
 <%- include partials/head %>
 
-<body>
+<body style="display: flex; flex-direction: column">
   <%- include partials/header %>
-  <%- include partials/intro %>
-  <div class="container-fluid m0 p0">
+  <div class="container-fluid m0 p0" style="flex: 1">
     <div class="row mx-responsive m0 p0">
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 p0">
         <main>
@@ -14,7 +13,6 @@
       </div>
     </div>
   </div>
-  <%- include partials/contact %>
   <%- include partials/footer %>
   <%- include partials/scripts %>
   <%- include partials/tracking %>

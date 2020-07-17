@@ -1,14 +1,14 @@
 // Add your global site properties here
 module.exports = {
   site: {
-    url: 'https://static-site-express.netlify.com/',
-    title: `static-site-express`,
+    url: 'https://wormy-the-game.netlify.com/',
+    title: `wormy the game`,
     defaultImage: '/assets/images/static.jpg',
-    author: 'András Gulácsi',
-    quote: 'A Node.js-based static site generator that uses EJS and Markdown',
-    description: 'A Node.js-based static site generator that uses EJS and Markdown',
+    author: 'Jonathan Sirrine',
+    quote: 'Wormy the game',
+    description: 'Wormy the game',
     currentYear: new Date().getFullYear(),
     google_analytics: 'YOUR-ID-COMES-HERE',
-    github: 'https://github.com/SalsaBoy990'
+    github: 'https://github.com/Sirrine-Jonathan'
   }
 }
