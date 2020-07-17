@@ -23,9 +23,8 @@ class Wormy {
 		this.JUMP_VELOCITY = -3.8;
 
 		// master state
-		this.states = ['idle', 'airborne'];
+		this.states = ['airborne'];
 		this.possible_states = {
-			idle: [],
 			moving: ['climbing'],
 			airborne: ['climbing'],
 			climbing: ['moving', 'stabbing'],
@@ -66,7 +65,10 @@ class Wormy {
 		this.climbing_states = [
 			TextureCache["climbing-R.png"],
 			TextureCache["climbing-L.png"]
-		]
+		];
+		this.climbing_state = 0;
+		this.climbing_state_duration = 300;
+		this.climbing_state_last_change = Date.now();
 
 		// stabing states
 		this.stabbing_states = [
@@ -124,26 +126,26 @@ class Wormy {
 		}
 	}
 
-	update = (delta) => {
-		
+	updateMotion = () => {
+
 		// Apply gravity
 		if (this.game.should_apply_gravity(this.sprite)){
 			this.game.apply_gravity(this.sprite);
 		} else {
-			this.sprite.vy = 0;
 			this.removeState('airborne');
+			this.sprite.vy = 0;
 		}
 
 		// update direction & x-axis motion
 		if (this.game.keys['ArrowRight'] && !this.game.keys['ArrowLeft']){
 			this.direction = 'right';
-			if (!this.isState('airborne')){
+			if (!this.isState('airborne') && !this.isState('climbing')){
 				this.sprite.vx = Math.min(this.sprite.vx + this.speed, this.max_vx);
 				this.addState('moving');
 			}
 		} else if (!this.game.keys['ArrowRight'] && this.game.keys['ArrowLeft']) {
 			this.direction = 'left';
-			if (!this.isState('airborne')){
+			if (!this.isState('airborne') && !this.isState('climbing')){
 				this.sprite.vx = Math.max(this.sprite.vx - this.speed, this.min_vx);
 				this.addState('moving');
 			}
@@ -170,77 +172,88 @@ class Wormy {
 					this.canState('airborne')
 				) {
 					this.addState('airborne');
-					this.sprite.vy += this.JUMP_VELOCITY;
+					if (this.isState('climbing')){
+						this.sprite.vy += -(Math.abs(this.JUMP_VELOCITY) / 2);
+					} else {
+						this.sprite.vy += this.JUMP_VELOCITY;
+					}
 				}
+			} else {
+				this.removeState('climbing');
 			}
 		}
-		
-		// stabbing
+
+		// stabbing 
 		if (this.game.keys[" "] && this.canState('stabbing')){
 			this.addState('stabbing');
 		} else {
 			this.removeState('stabbing');
 		}
 
-		// detect sprite state
-		if (this.isState('idle')){
-			if (
-				Date.now() - this.idle_state_last_change > this.idle_state_duration || 
-				this.direction != this.last_direction
-			){
-				let state_rotation = [0, 1, 2, 1];
-				this.idle_state = (this.idle_state + 1) % state_rotation.length;
-				if (this.direction == 'right'){
-					this.sprite.texture = this.idle_right_states[state_rotation[this.idle_state]];
-				} else {
-					this.sprite.texture = this.idle_left_states[state_rotation[this.idle_state]];
-				}
-				this.idle_state_last_change = Date.now();
-			}
-		}
-
-		if (this.isState('moving')){
-			if (
-				Date.now() - this.moving_state_last_change > this.moving_state_duration || 
-				this.direction != this.last_direction
-			){
-				this.moving_state = (this.moving_state + 1) % this.moving_right_states.length;
-				if (this.direction == 'right'){
-					this.sprite.texture = this.moving_right_states[this.moving_state];
-				} else {
-					this.sprite.texture = this.moving_left_states[this.moving_state];
-				}
-				this.moving_state_last_change = Date.now();
-			}
-		} else if (
-			this.isState('climbing') &&
-			this.game.keys['ArrowUp']	
-		){
-			if (this.direction === 'right'){
-				this.sprite.texture = this.climbing_states[0];
-			} else {
-				this.sprite.texture = this.climbing_states[1];
-			}
-		} else {
-			this.removeState('climbing');
-		}
-
-		if (
-			this.isState('stabbing') &&
-			!this.isState('climbing')	 
-		){
-			if (this.direction == 'right'){
-				this.sprite.texture = this.stabbing_states[0];
-			} else {
-				this.sprite.texture = this.stabbing_states[2];
-			}
-		} else {
-			this.removeState('stabbing');
-		}
-		
 		this.sprite.x += this.sprite.vx;
 		this.sprite.y += this.sprite.vy;
-		this.last_direction = this.direction; console.log(this.states);
+		this.last_direction = this.direction;
+	}
+
+	idleAnimation = () => {
+		let state_rotation = [0, 1, 2, 1];
+		if (Date.now() - this.idle_state_last_change > this.idle_state_duration){
+			this.idle_state = (this.idle_state + 1) % state_rotation.length;
+			this.idle_state_last_change = Date.now();
+		}
+		if (this.direction == 'right'){
+			this.sprite.texture = this.idle_right_states[state_rotation[this.idle_state]];
+		} else {
+			this.sprite.texture = this.idle_left_states[state_rotation[this.idle_state]];
+		}
+	}
+
+	movingAnimation = () => {
+		if (Date.now() - this.moving_state_last_change > this.moving_state_duration){
+			this.moving_state = (this.moving_state + 1) % this.moving_right_states.length;
+			this.moving_state_last_change = Date.now();
+		}
+		if (this.direction == 'right'){
+			this.sprite.texture = this.moving_right_states[this.moving_state];
+		} else {
+			this.sprite.texture = this.moving_left_states[this.moving_state];
+		}
+	}
+
+	climbingAnimation = () => {
+		if (Date.now() - this.climbing_state_last_change > this.climbing_state_duration){
+			this.climbing_state = (this.climbing_state + 1) % 2;
+			this.climbing_state_last_change = Date.now();
+		}
+		this.sprite.texture = this.climbing_states[this.climbing_state];
+	}
+
+	stabbingAnimation = () => {
+		let index = 0;
+		if (this.direction == 'left'){
+			index += 2;
+		}
+		if (this.isState('damaging')){
+			index += 1;
+		}
+		this.sprite.texture = this.stabbing_states[index];
+	}
+
+	updateAnimation = () => {
+		if (this.states.length <= 0){
+			this.idleAnimation();
+		} else if (this.isState('moving') && !this.isState('stabbing')){
+			this.movingAnimation();
+		} else if (this.isState('climbing') || this.isState('airborne')){
+			this.climbingAnimation();
+		} else if (this.isState('stabbing')){
+			this.stabbingAnimation();
+		}
+	}
+
+	update = (delta) => {
+		this.updateAnimation();
+		this.updateMotion();
 	}
 }
 

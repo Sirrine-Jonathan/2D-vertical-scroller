@@ -20,8 +20,8 @@ canvas {
 }
 
 .header-inner {
-    background: #291616;
-    color: #fb09f4;
+	background: #291616;
+	color: #fb09f4;
 }
 
 .home-link {
@@ -29,10 +29,16 @@ canvas {
 }
 
 .site-title {
-    margin: auto;
+	margin: auto;
 }
 
 .footer {
-    background: #291616;
-    color: #fb09f4;
+	background: #291616;
+	color: #ffffff5e;
+}
+
+footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
