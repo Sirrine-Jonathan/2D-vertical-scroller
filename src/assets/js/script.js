@@ -17,10 +17,49 @@ app.renderer.resize(800, 472);
 //Add the canvas that Pixi automatically created for you to the HTML document
 document.querySelector('#root').appendChild(app.view);
 
+class Roach {
+	constructor(app, game, position){
+		this.game = game;
+		this.stunned_states = [
+			TextureCache["roach-stunned-R1.png"],
+			TextureCache["roach-stunned-L1.png"],
+		];
+		this.moving_right_states = [
+			TextureCache["roach-moving-R1.png"],
+			TextureCache["roach-moving-R2.png"],
+		];
+		this.moving_left_states = [
+			TextureCache["roach-moving-L1.png"],
+			TextureCache["roach-moving-L2.png"],
+		];
+		this.direction = (Math.floor(Math.random() * 2)) ? 'right':'left';
+		if (this.direction === 'right'){
+			this.sprite = new Sprite(this.moving_right_states[0]);
+		} else {
+			this.sprite = new Sprite(this.moving_left_states[0]);
+		}
+		this.sprite.x = position.x;
+		this.sprite.y = position.y;
+		this.sprite.vx = 0;
+		this.sprite.vy = 0;
+		this.max_vx = 3;
+		this.min_vx = -3;
+		this.speed = 0.5;
+		app.stage.addChild(this.sprite);
+	}
+
+	update(){
+		this.sprite.x += this.sprite.vx;
+		this.sprite.y += this.sprite.vy;
+	}
+}
+
+
 class Wormy {
 	constructor(app, game){
 		this.game = game;
 		this.JUMP_VELOCITY = -3.8;
+		this.FALL_TOLERANCE = 10;
 
 		// master state
 		this.states = ['airborne'];
@@ -80,14 +119,16 @@ class Wormy {
 
 		// intial state
 		this.sprite = new Sprite(this.idle_right_states[0]);
-		this.sprite.x = 32 * 5;
-		this.sprite.y = 32 * 7;
+		this.sprite.x = 32 * 1;
+		this.sprite.y = 32 * 11;
 		this.sprite.vx = 0;
 		this.sprite.vy = 0;
 		this.max_vx = 3;
 		this.min_vx = -3;
 		this.speed = 0.5;
 		app.stage.addChild(this.sprite);
+
+		this.last_animation = 'climbing';
 	}
 
 	isState = (state) => {
@@ -120,15 +161,19 @@ class Wormy {
 	updateMotion = () => {
 
 		// Apply gravity
-		if (
-			this.game.should_apply_gravity(this.sprite) &&
-			!this.isState('climbing')
-		){
-			this.game.apply_gravity(this.sprite);
-			this.addState('airborne');
+		if (!this.isState('climbing')){
+			if (this.game.should_apply_gravity(this.sprite)){
+				this.game.apply_gravity(this.sprite);
+				this.addState('airborne');
+			} else {
+				this.removeState('airborne');
+				if (this.sprite.vy > this.FALL_TOLERANCE){
+					console.log('die');
+				}
+				this.sprite.vy = 0;
+			}
 		} else {
 			this.removeState('airborne');
-			this.sprite.vy = 0;
 		}
 
 		// update direction & x-axis motion
@@ -160,15 +205,21 @@ class Wormy {
 					this.game.can_climb(this.sprite) &&
 					this.canState('climbing')
 				){
-					this.addState('climbing')
+					this.addState('climbing');
 					this.sprite.vy = -1;
-				} else if (this.canState('airborne')) {
+				} else if (
+					this.canState('airborne') && 
+					!this.isState('climbing') && 
+					!this.isState('airborne')
+				) {
 					this.addState('airborne');
-					if (this.isState('climbing')){
-						this.sprite.vy += -(Math.abs(this.JUMP_VELOCITY) / 2);
-					} else {
+					if (this.sprite.vy <= 0){
 						this.sprite.vy += this.JUMP_VELOCITY;
 					}
+				} else {
+					this.addState('airborne');
+					this.removeState('climbing');
+					this.sprite.vy += -(Math.abs(this.JUMP_VELOCITY) / 2.8);
 				}
 			} else {
 				this.removeState('climbing');
@@ -182,7 +233,14 @@ class Wormy {
 			this.removeState('stabbing');
 		}
 
-		this.sprite.x += this.sprite.vx;
+		let canMove = this.game.check_bounds({ 
+			x: this.sprite.x + this.sprite.vx,
+			y: this.sprite.y + this.sprite.vy,
+			dir: this.direction
+		});
+		if (canMove){
+			this.sprite.x += this.sprite.vx;
+		}
 		this.sprite.y += this.sprite.vy;
 		this.last_direction = this.direction;
 	}
@@ -234,54 +292,59 @@ class Wormy {
 	updateAnimation = () => {
 		if (this.states.length <= 0){
 			this.idleAnimation();
+			this.last_animation = 'idle';
 		} else if (this.isState('moving') && !this.isState('stabbing')){
 			this.movingAnimation();
+			this.last_animation = 'moving';
 		} else if (this.isState('climbing') || this.isState('airborne')){
 			this.climbingAnimation();
 		} else if (this.isState('stabbing')){
 			this.stabbingAnimation();
+			this.last_animation = 'stabbing';
 		}
 	}
 
 	update = (delta) => {
 		this.updateAnimation();
 		this.updateMotion();
-		//console.log(this.game.keys);
 	}
 }
 
-class Game{
+class Game {
 	constructor(){
+		this.TERMINAL_VELOCITY = 3.7;
+		this.GRAVITY = 0.2;
+		this.TILE_SIZE = 32;
+
 		this.keys = {};
 		this.objects = [];
-		this.gravity = 0.2;
-		this.tile_size = 32;
+		
 		function r(){
-			let min = 12;
+			let min = 22;
 			let max = 15;
 			let len = max - min;
 			return Math.floor(Math.random() * len) + min;
 		}
 		this.map = [
-			[r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r()],
-			[r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r()],
-			[r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r()],
-			[r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),2,r(),r()],
-			[r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),1,r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r()],
-			[r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r()],
-			[r(),r(),r(),r(),r(),2,r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r()],
-			[r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r()],
-			[r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),2,r(),r(),r(),r(),r(),r(),r(),r()],
-			[r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r()],
-			[r(),r(),r(),r(),9,6,6,6,7,r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r()],
-			[r(),r(),r(),r(),3,r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r()],
-			[r(),r(),r(),r(),3,r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),1,r(),r()],
-			[r(),r(),r(),r(),3,r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r(),r()],
-			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,11,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,12,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,12,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,11,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,16,16,16,20,17,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,13,22,22,22,22],
+			[22,22,15,16,16,16,20,16,17,22,22,22,22,22,22,22,13,22,22,22,13,22,22,22,22],
+			[22,22,22,22,22,22,13,22,22,22,22,22,22,22,22,22,13,22,22,22,13,22,22,22,22],
+			[22,22,22,22,19,16,16,17,22,22,22,15,16,16,16,16,16,16,17,22,13,22,22,22,22],
+			[22,22,22,22,13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,11,22,22],
+			[22,22,22,22,13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22],
+			[10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
 		];
 		this.collision_map = {
-			floor_collision: [0, 4, 5, 6, 7, 8, 9, 10, 11],
-			climbable: [3, 8, 9, 10, 11]
+			floor_collision: [10, 14, 15, 16, 17, 18, 19, 20, 21],
+			climbable: [13, 18, 19, 20, 21],
 		};
 		this.map_index_map = [
 			"ground.png",                   // 0
@@ -296,7 +359,7 @@ class Game{
 			"pipe_left_stairs.png",         // 9
 			"pipe_middle_stairs.png",       // 10
 			"pipe_right_stairs.png",        // 11
-			"background_1.png",             // 12
+			"background_1.png",             // 22
 			"background_2.png",             // 13
 			"background_3.png",             // 14
 			"background_4.png"              // 15
@@ -304,6 +367,7 @@ class Game{
 		loader
 			.add("/assets/images/wormy.json")
 			.add("/assets/images/underground.json")
+			.add("/assets/images/roach.json")
 			.on("progress", this.loadProgressHandler)
 			.load(this.setup);
 	}
@@ -313,11 +377,11 @@ class Game{
 		for (let row = 0; row < this.map.length; row++){
 			for (let col = 0; col < this.map[row].length; col++){
 				let tile_index = this.map[row][col];
-				let tile_path = this.map_index_map[tile_index];
+				let tile_path = this.map_index_map[tile_index - 10];
 				let texture = TextureCache[tile_path];
 				let tile = new Sprite(texture);
-				let x = col * this.tile_size;
-				let y = row * this.tile_size;
+				let x = col * this.TILE_SIZE;
+				let y = row * this.TILE_SIZE;
 				tile.position.set(x, y);
 				map_tiles.addChild(tile);
 			}
@@ -339,17 +403,21 @@ class Game{
 	}
 
 	addObject = (obj) => {
-		this.objects.push(obj);
+		if (typeof obj === 'object' && obj.length){
+			for (let i = 0; i < obj.length; i++){
+				this.objects.push(obj[i]);
+			}
+		} else {
+			this.objects.push(obj);
+		}
 	}
 
 	setup = () => {
 		// setup key listeners
 		window.addEventListener('keydown', (e) => {
-			console.log('down', e.key);
 			this.keys[e.key] = true;
 		})
 		window.addEventListener('keyup', (e) => {
-			console.log('up', e.key);
 			this.keys[e.key] = false;
 		})
 
@@ -357,39 +425,66 @@ class Game{
 		this.add_map();
 
 		// add objects
-		let wormy = new Wormy(app, this);
-		this.addObject(wormy);
+		let objects = [
+			new Wormy(app, this),
+			new Roach(app, this, { x: 32 * 13, y: 32 * 13}),
+			new Roach(app, this, { x: 32 * 3, y: 32 * 8})
+		];
+		this.addObject(objects);
 
 		// start loop
 		app.ticker.add(delta => this.gameLoop(delta));
 	}
 
 	apply_gravity = (obj) => {
-		if (Math.abs(obj.vy) < 4){
-			obj.vy += this.gravity;
+		if (obj.vy < this.TERMINAL_VELOCITY){
+			obj.vy += this.GRAVITY;
 		}
+	}
+
+	check_bounds = (obj) => {
+		if (obj.dir === 'right'){
+			let tile_tr = this.tile_coordinates(obj, 'top-right');
+			let tile_br = this.tile_coordinates(obj, 'bottom-right');
+			if (
+				!(this.map[tile_tr.row] && this.map[tile_tr.row][tile_tr.col]) || 
+				!(this.map[tile_br.row] && this.map[tile_br.row][tile_br.col])
+			){
+				return false;
+			}
+		} else {
+			let tile_tl = this.tile_coordinates(obj, 'top-left');
+			let tile_bl = this.tile_coordinates(obj, 'bottom-left');
+			if (
+				!(this.map[tile_tl.row] && this.map[tile_tl.row][tile_tl.col]) ||
+				!(this.map[tile_bl.row] && this.map[tile_bl.row][tile_bl.col])
+			){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	tile_coordinates = (obj, rel = 'middle') => {
 		let row, col;
 		if (rel === 'top-left'){
-			row = Math.floor(obj.y / this.tile_size) - 1;
-			col = Math.floor(obj.x / this.tile_size);
+			row = Math.floor(obj.y / this.TILE_SIZE);
+			col = Math.floor(obj.x / this.TILE_SIZE);
 		} else if (rel ==='top-right'){
-			row = Math.floor(obj.y / this.tile_size);
-			col = Math.floor((obj.x + this.tile_size) / this.tile_size);
+			row = Math.floor(obj.y / this.TILE_SIZE);
+			col = Math.floor((obj.x + this.TILE_SIZE) / this.TILE_SIZE);
 		} else if (rel === 'bottom-left'){
-			row = Math.floor((obj.y + this.tile_size) / this.tile_size) - 1;
-			col = Math.floor(obj.x / this.tile_size);
+			row = Math.floor((obj.y + this.TILE_SIZE) / this.TILE_SIZE);
+			col = Math.floor(obj.x / this.TILE_SIZE);
 		} else if (rel === 'bottom-middle'){
-			row = Math.floor((obj.y + this.tile_size) / this.tile_size) - 1;
-			col = Math.floor((obj.x + (this.tile_size / 2)) / this.tile_size);
+			row = Math.floor((obj.y + this.TILE_SIZE) / this.TILE_SIZE);
+			col = Math.floor((obj.x + (this.TILE_SIZE / 2)) / this.TILE_SIZE);
 		} else if (rel === 'bottom-right'){
-			row = Math.floor((obj.y + this.tile_size) / this.tile_size);
-			col = Math.floor((obj.x + this.tile_size) / this.tile_size);
+			row = Math.floor((obj.y + this.TILE_SIZE) / this.TILE_SIZE);
+			col = Math.floor((obj.x + this.TILE_SIZE) / this.TILE_SIZE);
 		} else if (rel === 'middle') {
-			row = Math.floor((obj.y + (this.tile_size / 2)) / this.tile_size);
-			col = Math.floor((obj.x + (this.tile_size / 2)) / this.tile_size);
+			row = Math.floor((obj.y + (this.TILE_SIZE / 2)) / this.TILE_SIZE);
+			col = Math.floor((obj.x + (this.TILE_SIZE / 2)) / this.TILE_SIZE);
 		}
 		return { row, col };
 	}
@@ -405,8 +500,22 @@ class Game{
 	}
 
 	should_apply_gravity = (obj) => {
-		let tile_num = this.tile_num_below(obj, 'bottom-middle');
-		let  should = (this.collision_map.floor_collision.indexOf(tile_num) < 0);
+		
+		let bm_y = (obj.y + this.TILE_SIZE);
+		let bm_x = (obj.x + this.TILE_SIZE / 2);
+		let col = Math.floor(bm_x / this.TILE_SIZE);
+		let should = true;
+		for (let i = 0; i < this.map.length; i++){
+			let tile_num = this.map[i][col];
+			if ((this.collision_map.floor_collision.indexOf(tile_num) >= 0)){
+				let collision_line = this.TILE_SIZE * i;
+				
+				if (bm_y <= collision_line && bm_y > (collision_line - this.TERMINAL_VELOCITY - 0.1)){
+					obj.y = collision_line - this.TILE_SIZE;
+					should = false;
+				}
+			}
+		}
 		return should;
 	}
 
@@ -416,9 +525,15 @@ class Game{
 		return can;
 	}
 
+	reset = () => {
+		// reset game after death
+	}
+
 	gameLoop = (delta) => {
 		this.objects.forEach(obj => obj.update(delta));
 	}
 	
 }
 let game = new Game();
+
+
