@@ -17,9 +17,40 @@ app.renderer.resize(800, 472);
 //Add the canvas that Pixi automatically created for you to the HTML document
 document.querySelector('#root').appendChild(app.view);
 
-class Roach {
+class GameObject {
+	isState = (state) => {
+		let index = this.states.indexOf(state);
+		return (index >= 0);
+	}
+
+	canState = (state) => {
+		let canState = true;
+		this.states.forEach(current => {
+			if (this.possible_states[current].indexOf(state) >= 0){
+				canState = false;
+			}
+		})
+		return canState;
+	}
+
+	removeState = (state) => {
+		if (this.isState(state)){
+			this.states = this.states.filter(current => current !== state);
+		}
+	}
+
+	addState = (state) => {
+		if (!this.isState(state)){
+			this.states.push(state);
+		}
+	}
+}
+
+class Roach extends GameObject {
 	constructor(app, game, position){
+		super();
 		this.game = game;
+		this.states = [];
 		this.stunned_states = [
 			TextureCache["roach-stunned-R1.png"],
 			TextureCache["roach-stunned-L1.png"],
@@ -49,6 +80,17 @@ class Roach {
 	}
 
 	update(){
+
+		if (this.game.should_apply_gravity(this.sprite)){
+			this.game.apply_gravity(this.sprite);
+			this.addState('airborne');
+		} else {
+			this.removeState('airborne');
+			if (this.sprite.vy > this.FALL_TOLERANCE){
+				console.log('die');
+			}
+			this.sprite.vy = 0;
+		}
 		this.sprite.x += this.sprite.vx;
 		this.sprite.y += this.sprite.vy;
 	}
@@ -60,6 +102,7 @@ class Wormy {
 		this.game = game;
 		this.JUMP_VELOCITY = -3.8;
 		this.FALL_TOLERANCE = 10;
+		this.isTarget = true;
 
 		// master state
 		this.states = ['airborne'];
@@ -120,7 +163,7 @@ class Wormy {
 		// intial state
 		this.sprite = new Sprite(this.idle_right_states[0]);
 		this.sprite.x = 32 * 1;
-		this.sprite.y = 32 * 11;
+		this.sprite.y = 32 * 12;
 		this.sprite.vx = 0;
 		this.sprite.vy = 0;
 		this.max_vx = 3;
@@ -177,21 +220,27 @@ class Wormy {
 		}
 
 		// update direction & x-axis motion
-		if (this.game.keys['ArrowRight'] && !this.game.keys['ArrowLeft']){
+		if (
+			(this.game.keys['ArrowRight'] && !this.game.keys['ArrowLeft']) ||
+			(this.game.keys['d'] && !this.game.keys['a'])
+		){
 			this.direction = 'right';
 			if (!this.isState('airborne') && !this.isState('climbing')){
 				this.sprite.vx = Math.min(this.sprite.vx + this.speed, this.max_vx);
 				this.addState('moving');
 			}
-		} else if (!this.game.keys['ArrowRight'] && this.game.keys['ArrowLeft']) {
+		} else if (
+			(!this.game.keys['ArrowRight'] && this.game.keys['ArrowLeft']) ||
+			(!this.game.keys['d'] && this.game.keys['a'])	
+		){
 			this.direction = 'left';
 			if (!this.isState('airborne') && !this.isState('climbing')){
 				this.sprite.vx = Math.max(this.sprite.vx - this.speed, this.min_vx);
 				this.addState('moving');
 			}
 		} else if (
-			!this.game.keys['ArrowRight'] && 
-			!this.game.keys['ArrowLeft'] &&
+			(!this.game.keys['ArrowRight'] && !this.game.keys['ArrowLeft']) &&
+			(!this.game.keys['a'] && !this.game.keys['d']) &&
 			!this.isState('airborne')
 		){
 			this.sprite.vx = 0;
@@ -200,7 +249,7 @@ class Wormy {
 
 		// update y-axis motion
 		if (!this.isState('airborne')){
-			if (this.game.keys['ArrowUp']){
+			if (this.game.keys['ArrowUp'] || this.game.keys['w']){
 				if (
 					this.game.can_climb(this.sprite) &&
 					this.canState('climbing')
@@ -243,6 +292,8 @@ class Wormy {
 		}
 		this.sprite.y += this.sprite.vy;
 		this.last_direction = this.direction;
+
+		//console.log('worm pos', { x: this.sprite.x, y: this.sprite.y });
 	}
 
 	idleAnimation = () => {
@@ -315,9 +366,15 @@ class Game {
 		this.TERMINAL_VELOCITY = 3.7;
 		this.GRAVITY = 0.2;
 		this.TILE_SIZE = 32;
+		this.SCREEN_ROWS = 15;
+		this.INITIAL_SCROLL_SPEED = 0.02;
+		this.INITIAL_SCROLL_VELOCITY = 0;
 
 		this.keys = {};
 		this.objects = [];
+
+		this.camera_x = 0;
+		this.camera_y = 0;
 		
 		function r(){
 			let min = 22;
@@ -326,14 +383,94 @@ class Game {
 			return Math.floor(Math.random() * len) + min;
 		}
 		this.map = [
+
+			/* end zone */
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+
+			/* level five */
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
-			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,11,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
-			[22,22,22,12,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,12,22,22],
-			[22,22,22,22,22,22,22,22,22,22,22,22,11,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+
+			/* level four */
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
-			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,16,16,16,20,17,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+
+			/* level three */
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+
+			/* level two */
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+
+
+			/* level one */
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,15,16,16,16,20,16,17,22,22,22,22,22,22,11,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,13,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,12,22,22,22,22,15,21,22,22,22,22,22,22,22,22,22,13,22,22,12,22,22],
+			[22,22,22,22,22,22,22,22,22,13,22,22,11,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,13,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,13,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,15,16,17,22,22,22,15,20,16,16,16,20,17,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,13,22,22,22,22],
 			[22,22,15,16,16,16,20,16,17,22,22,22,22,22,22,22,13,22,22,22,13,22,22,22,22],
 			[22,22,22,22,22,22,13,22,22,22,22,22,22,22,22,22,13,22,22,22,13,22,22,22,22],
@@ -342,6 +479,9 @@ class Game {
 			[22,22,22,22,13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22],
 			[10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
 		];
+		this.mapOffset = this.map.length - this.SCREEN_ROWS;
+		this.initialY = this.mapOffset * this.TILE_SIZE;
+
 		this.collision_map = {
 			floor_collision: [10, 14, 15, 16, 17, 18, 19, 20, 21],
 			climbable: [13, 18, 19, 20, 21],
@@ -381,12 +521,13 @@ class Game {
 				let texture = TextureCache[tile_path];
 				let tile = new Sprite(texture);
 				let x = col * this.TILE_SIZE;
-				let y = row * this.TILE_SIZE;
+				let y = ((row - this.mapOffset) * this.TILE_SIZE);
 				tile.position.set(x, y);
 				map_tiles.addChild(tile);
 			}
 		}
 		app.stage.addChild(map_tiles);
+		return map_tiles;
 	}
 
 	start_debug_circle(x, y){
@@ -422,15 +563,9 @@ class Game {
 		})
 
 		// draw map
-		this.add_map();
+		this.map_container = this.add_map();
 
-		// add objects
-		let objects = [
-			new Wormy(app, this),
-			new Roach(app, this, { x: 32 * 13, y: 32 * 13}),
-			new Roach(app, this, { x: 32 * 3, y: 32 * 8})
-		];
-		this.addObject(objects);
+		this.map_container.y = this.initialY;
 
 		// start loop
 		app.ticker.add(delta => this.gameLoop(delta));
@@ -486,6 +621,7 @@ class Game {
 			row = Math.floor((obj.y + (this.TILE_SIZE / 2)) / this.TILE_SIZE);
 			col = Math.floor((obj.x + (this.TILE_SIZE / 2)) / this.TILE_SIZE);
 		}
+		row += this.mapOffset;
 		return { row, col };
 	}
 
@@ -500,7 +636,6 @@ class Game {
 	}
 
 	should_apply_gravity = (obj) => {
-		
 		let bm_y = (obj.y + this.TILE_SIZE);
 		let bm_x = (obj.x + this.TILE_SIZE / 2);
 		let col = Math.floor(bm_x / this.TILE_SIZE);
@@ -508,8 +643,7 @@ class Game {
 		for (let i = 0; i < this.map.length; i++){
 			let tile_num = this.map[i][col];
 			if ((this.collision_map.floor_collision.indexOf(tile_num) >= 0)){
-				let collision_line = this.TILE_SIZE * i;
-				
+				let collision_line = (this.TILE_SIZE * (i - this.mapOffset)) - this.map_container.y;
 				if (bm_y <= collision_line && bm_y > (collision_line - this.TERMINAL_VELOCITY - 0.1)){
 					obj.y = collision_line - this.TILE_SIZE;
 					should = false;
@@ -529,10 +663,62 @@ class Game {
 		// reset game after death
 	}
 
-	gameLoop = (delta) => {
-		this.objects.forEach(obj => obj.update(delta));
+	setTarget = (game_obj) => {
+		this.objects.forEach((obj) => {
+			obj.isTarget === false;
+		})
+		game_obj.isTarget = true;
 	}
-	
+
+	updateCamera = (target) => {
+		this.camera_x = target.sprite.x;
+		this.camera_y = target.sprite.y;
+		//console.log({ x: this.map_container.x, y: this.map_container.y });
+		//console.log(this.map.length);
+	}
+
+	gameLoop = (delta) => {
+		this.objects.forEach((obj) => {
+			obj.update(delta);
+			/*
+			if (obj.isTarget){
+				if (obj.sprite.y < 320){
+					let offset = 320 - obj.sprite.y;
+					this.map_container.y = offset;
+				}
+			}
+			*/
+		});
+
+		if (this.map_container.y > 0 && !this.keys['i']){
+			this.INITIAL_SCROLL_VELOCITY += this.INITIAL_SCROLL_SPEED;
+			this.map_container.y -= this.INITIAL_SCROLL_VELOCITY;
+		} else if (this.initialY != null){
+			this.initialY = null;
+			setTimeout(() => {
+				// add objects
+				let objects = [
+					new Wormy(app, this),
+					new Roach(app, this, { x: 32 * 13, y: 32 * 13}),
+					new Roach(app, this, { x: 32 * 3, y: 32 * 8})
+				];
+				this.addObject(objects);
+			});
+		}
+
+		// dev camera controls
+		if (this.keys['i']){
+			this.objects.forEach((obj) => {
+				obj.sprite.y += 1;
+			});
+			this.map_container.y += 1;
+		} else if (this.keys['k']){
+			this.objects.forEach((obj) => {
+				obj.sprite.y -= 1;
+			});
+			this.map_container.y -= 1;
+		}
+	}
 }
 let game = new Game();
 
