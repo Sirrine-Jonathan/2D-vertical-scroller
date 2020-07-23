@@ -248,31 +248,29 @@ class Wormy {
 		}
 
 		// update y-axis motion
-		if (!this.isState('airborne')){
-			if (this.game.keys['ArrowUp'] || this.game.keys['w']){
-				if (
-					this.game.can_climb(this.sprite) &&
-					this.canState('climbing')
-				){
-					this.addState('climbing');
-					this.sprite.vy = -1;
-				} else if (
-					this.canState('airborne') && 
-					!this.isState('climbing') && 
-					!this.isState('airborne')
-				) {
-					this.addState('airborne');
-					if (this.sprite.vy <= 0){
-						this.sprite.vy += this.JUMP_VELOCITY;
-					}
-				} else {
-					this.addState('airborne');
-					this.removeState('climbing');
-					this.sprite.vy += -(Math.abs(this.JUMP_VELOCITY) / 2.8);
+		if (this.game.keys['ArrowUp'] || this.game.keys['w']){
+			if (
+				this.game.can_climb(this.sprite) &&
+				this.canState('climbing')
+			){
+				this.addState('climbing');
+				this.sprite.vy = -1;
+			} else if (
+				this.canState('airborne') && 
+				!this.isState('climbing') && 
+				!this.isState('airborne')
+			) {
+				this.addState('airborne');
+				if (this.sprite.vy <= 0){
+					this.sprite.vy += this.JUMP_VELOCITY;
 				}
-			} else {
+			} else if (!this.isState('airborne')){
+				this.addState('airborne');
 				this.removeState('climbing');
+				this.sprite.vy += -(Math.abs(this.JUMP_VELOCITY) / 2.8);
 			}
+		} else {
+			this.removeState('climbing');
 		}
 
 		// stabbing 
@@ -445,17 +443,17 @@ class Game {
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
 
 			/* level two */
-			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
-			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
-			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
-			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
-			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
-			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
-			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
-			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
-			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,18,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22,22],
+			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,15,20,17,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22],
@@ -480,7 +478,7 @@ class Game {
 			[10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
 		];
 		this.mapOffset = this.map.length - this.SCREEN_ROWS;
-		this.initialY = this.mapOffset * this.TILE_SIZE;
+		this.initialY = 0; this.mapOffset * this.TILE_SIZE;
 
 		this.collision_map = {
 			floor_collision: [10, 14, 15, 16, 17, 18, 19, 20, 21],
@@ -601,24 +599,25 @@ class Game {
 	}
 
 	tile_coordinates = (obj, rel = 'middle') => {
+		let temp_y = obj.y - this.map_container.y;
 		let row, col;
 		if (rel === 'top-left'){
-			row = Math.floor(obj.y / this.TILE_SIZE);
+			row = Math.floor(temp_y / this.TILE_SIZE);
 			col = Math.floor(obj.x / this.TILE_SIZE);
 		} else if (rel ==='top-right'){
-			row = Math.floor(obj.y / this.TILE_SIZE);
+			row = Math.floor(temp_y / this.TILE_SIZE);
 			col = Math.floor((obj.x + this.TILE_SIZE) / this.TILE_SIZE);
 		} else if (rel === 'bottom-left'){
-			row = Math.floor((obj.y + this.TILE_SIZE) / this.TILE_SIZE);
+			row = Math.floor((temp_y + this.TILE_SIZE) / this.TILE_SIZE);
 			col = Math.floor(obj.x / this.TILE_SIZE);
 		} else if (rel === 'bottom-middle'){
-			row = Math.floor((obj.y + this.TILE_SIZE) / this.TILE_SIZE);
+			row = Math.floor((temp_y + this.TILE_SIZE) / this.TILE_SIZE);
 			col = Math.floor((obj.x + (this.TILE_SIZE / 2)) / this.TILE_SIZE);
 		} else if (rel === 'bottom-right'){
-			row = Math.floor((obj.y + this.TILE_SIZE) / this.TILE_SIZE);
+			row = Math.floor((temp_y + this.TILE_SIZE) / this.TILE_SIZE);
 			col = Math.floor((obj.x + this.TILE_SIZE) / this.TILE_SIZE);
 		} else if (rel === 'middle') {
-			row = Math.floor((obj.y + (this.TILE_SIZE / 2)) / this.TILE_SIZE);
+			row = Math.floor((temp_y + (this.TILE_SIZE / 2)) / this.TILE_SIZE);
 			col = Math.floor((obj.x + (this.TILE_SIZE / 2)) / this.TILE_SIZE);
 		}
 		row += this.mapOffset;
@@ -643,7 +642,8 @@ class Game {
 		for (let i = 0; i < this.map.length; i++){
 			let tile_num = this.map[i][col];
 			if ((this.collision_map.floor_collision.indexOf(tile_num) >= 0)){
-				let collision_line = (this.TILE_SIZE * (i - this.mapOffset)) - this.map_container.y;
+				let collision_line = (this.TILE_SIZE * (i - this.mapOffset));
+				collision_line += this.map_container.y;
 				if (bm_y <= collision_line && bm_y > (collision_line - this.TERMINAL_VELOCITY - 0.1)){
 					obj.y = collision_line - this.TILE_SIZE;
 					should = false;
@@ -677,20 +677,45 @@ class Game {
 		//console.log(this.map.length);
 	}
 
+	moveCamera = (direction) => {
+		switch (direction){
+			case 'UP': 
+				if ((this.map_container.y + 1) <= (this.TILE_SIZE * this.map.length) - (this.TILE_SIZE * this.SCREEN_ROWS)){
+					this.objects.forEach((obj) => {
+						obj.sprite.y += 1;
+					});
+				}
+				this.map_container.y += 1;
+			break;
+			case 'DOWN':
+				if ((this.map_container.y - 1) >= 0){
+					this.objects.forEach((obj) => {
+						obj.sprite.y -= 1;
+					});
+					this.map_container.y -= 1;
+				}
+			break;
+		}
+	}
+
 	gameLoop = (delta) => {
 		this.objects.forEach((obj) => {
 			obj.update(delta);
-			/*
+			
 			if (obj.isTarget){
-				if (obj.sprite.y < 320){
-					let offset = 320 - obj.sprite.y;
-					this.map_container.y = offset;
+				const PADDING = 4;
+				const UPPER_BOUND = this.TILE_SIZE * PADDING;
+				const LOWER_BOUND = this.TILE_SIZE * (this.SCREEN_ROWS - PADDING);
+				let temp_y = obj.sprite.y - this.map_container.y;
+				if (temp_y < (UPPER_BOUND - this.map_container.y)){
+					this.moveCamera('UP');
+				} else if (temp_y > (LOWER_BOUND - this.map_container.y)){
+					this.moveCamera('DOWN');
 				}
 			}
-			*/
 		});
 
-		if (this.map_container.y > 0 && !this.keys['i']){
+		if (this.map_container.y > 0 && !this.keys['i'] && this.initialY != null){
 			this.INITIAL_SCROLL_VELOCITY += this.INITIAL_SCROLL_SPEED;
 			this.map_container.y -= this.INITIAL_SCROLL_VELOCITY;
 		} else if (this.initialY != null){
@@ -708,15 +733,9 @@ class Game {
 
 		// dev camera controls
 		if (this.keys['i']){
-			this.objects.forEach((obj) => {
-				obj.sprite.y += 1;
-			});
-			this.map_container.y += 1;
+			this.moveCamera('UP');
 		} else if (this.keys['k']){
-			this.objects.forEach((obj) => {
-				obj.sprite.y -= 1;
-			});
-			this.map_container.y -= 1;
+			this.moveCamera('DOWN');
 		}
 	}
 }
