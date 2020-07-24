@@ -1,0 +1,44 @@
+* {
+	padding: 0; 
+	margin: 0
+}
+body {
+	background: #060201;
+}
+h1 {
+	margin: 10px auto;
+	width: 800px;
+	text-align: center;
+	font-family: monospace;
+	color: pink;
+	font-size: 50px;
+}
+canvas {
+	margin: 0 auto;
+	position: static !important;
+	border-radius: 5px;
+}
+
+.header-inner {
+	background: #291616;
+	color: #fb09f4;
+}
+
+.home-link {
+	text-decoration: none;
+}
+
+.site-title {
+	margin: auto;
+}
+
+.footer {
+	background: #291616;
+	color: #ffffff5e;
+}
+
+footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
