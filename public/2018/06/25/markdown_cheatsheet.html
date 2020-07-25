@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"> 
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+  <link rel="dns-prefetch" href="//fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css?family=DM+Sans:400,400i|Muli:600,700,800|Cousine&display=swap&subset=latin-ext" rel="stylesheet">
+  <title>Markdown cheatsheet, markdown-it plugins | wormy the game</title>
+  
+  <!-- MORE METAS ARE COMING HERE -->
+  <meta name="description" content="Wormy the game">
+  <meta property="og:title" content="Markdown cheatsheet, markdown-it plugins | wormy the game">
+  <meta property="og:url" content="https://wormy-the-game.netlify.com//2018/06/25/markdown_cheatsheet.html">
+  <meta property="og:site_name" content="wormy the game">
+  <meta property="og:description" content="I created this post for those who are unfamiliar with the syntax of Markdown. People who are already similar with Markdown should also check this post because I use some special plugins that provide additional features.">
+  <meta property="og:image" content="https://wormy-the-game.netlify.com//assets/images/articles/writing.jpg">
+  <meta property="og:type" content="website">
+
+  <meta property="fb:app_id" content=""/>
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="wormy the game">
+  <meta name="twitter:creator" content="Jonathan Sirrine">
+  <meta name="twitter:title" content="Markdown cheatsheet, markdown-it plugins | wormy the game">
+  <meta name="twitter:description" content="I created this post for those who are unfamiliar with the syntax of Markdown. People who are already similar with Markdown should also check this post because I use some special plugins that provide additional features.">
+  <meta name="twitter:url" content="https://wormy-the-game.netlify.com//2018/06/25/markdown_cheatsheet.html">
+  <meta name="twitter:image" content="https://wormy-the-game.netlify.com//assets/images/articles/writing.jpg">
+  
+  <link rel="canonical" href="https://wormy-the-game.netlify.com//2018/06/25/markdown_cheatsheet.html">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link href="./../../../assets/stylesheet/main.css" rel="stylesheet" type="text/css">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#2b5797">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet"
+    href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+</head>
+
+<body>
+  <header>
+  <div class="bg-medium-gray-text">
+    <div class="container-fluid m0 p0">
+      <div class="row mx-responsive navbar-height">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 p0 clearfix">
+          <div class="float-left mb0">
+            <a class="" href="/">
+              <img src="/assets/images/logo.png" class="m0 float-left" style="margin-top: 7px" alt="wormy the game logo">
+            </a>
+          </div>
+
+          <div class="float-right d-xs-block d-sm-block d-md-block d-lg-none d-xl-none" style="margin-top: .4rem;">
+            <ul class="nav nav-pills mt0">
+              <li class="nav-item dropdown">
+                <a class="nav-link white-link dropdown-toggle sans-serif medium-size border-neutral-blue no-underline"
+                  data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Menu</a>
+                <div class="dropdown-menu dropdown-menu-right sans-serif ">
+                  <a class="dropdown-item no-underline" href="/#get-started">Get Started</a>
+                  <a class="dropdown-item no-underline" href="/documentation.html">Documentation</a>
+                  <a class="dropdown-item no-underline" href="#contact-me">Contact Me</a>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+        <div class="col-xs-8 col-sm-8 col-md-6 col-lg-8 col-xl-8 p0 clearfix">
+          <div class="float-right" style="float:right !important;">
+            <nav class="mobile-hide-nav" style="margin-top: 15px" role="navigation">
+              <a href="/#get-started" class="medium-size gray-link mr40px pthalf">Get started</a>
+              <a href="/documentation.html" class="medium-size gray-link mr40px pthalf">Documentation</a>
+              <a href="#contact-me" class="medium-size gray-link pthalf">Contact Me</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+  <div class="container-fluid m0 p0">
+    <div class="row mx-responsive m0 p0">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 p0">
+        <main>
+          <p class="small medium-gray-text mb0 mt3">Jun 25, 2018</p>
+<h1 class="no-underline expanded m0 mb3">Markdown cheatsheet, markdown-it plugins</h1>
+
+
+          <p>I created this post for those who are unfamiliar with the syntax of Markdown which is a markup language. People who are already familiar with Markdown should also check this post because I use some special plugins for <code>markdown-it</code> that provide additional features.</p>
+<p>For safety reasons, you cannot include HTML code into Markdown. By default, HTML is escaped.</p>
+<h2>Table of Contents</h2>
+<hr>
+<h3>General syntax</h3>
+<ol>
+<li><a href="#headings">Headings</a></li>
+<li><a href="#emphasis">Emphasis</a></li>
+<li><a href="#paragraph">Paragraphs, line breaks</a></li>
+<li><a href="#hrule">Horizontal rule</a></li>
+<li><a href="#blockquotes">Blockquotes</a></li>
+<li><a href="#links">Links</a></li>
+<li><a href="#lists">Lists</a></li>
+</ol>
+<h3>Special syntax</h3>
+<ol>
+<li><a href="#add-class">Add a CSS class and an #id to an element</a></li>
+<li><a href="#tables">Table with caption</a></li>
+<li><a href="#images">Image with caption</a></li>
+<li><a href="#highlight">Code syntax highlighting</a></li>
+</ol>
+<hr>
+<h2>General syntax</h2>
+<h3 id="headings">1. Headings</h3>
+<pre><code class="hljs"># H1
+## H2
+### H3
+#### H4
+##### H5
+###### H6
+
+Alternatively, for H1 and H2, an underline-ish style:
+
+Alt-H1
+======
+
+Alt-H2
+------
+</code></pre>
+<h1>H1</h1>
+<h2>H2</h2>
+<h3>H3</h3>
+<h4>H4</h4>
+<h5>H5</h5>
+<h6>H6</h6>
+<p>Alternatively, for H1 and H2, an underline-ish style:</p>
+<h1>Alt-H1</h1>
+<h2>Alt-H2</h2>
+<h3 id="emphasis">2. Emphasis</h3>
+<pre><code class="hljs language-markdown">Emphasis, aka italics, with <span class="hljs-emphasis">*asterisks*</span> or <span class="hljs-emphasis">_underscores_</span>.
+
+Strong emphasis, aka bold, with <span class="hljs-strong">**asterisks**</span> or <span class="hljs-strong">__underscores__</span>.
+
+Combined emphasis with <span class="hljs-strong">**asterisks and _underscores_*</span>*.
+
+Strikethrough uses two tildes. ~~Scratch this.~~
+</code></pre>
+<p>Emphasis, aka italics, with <em>asterisks</em> or <em>underscores</em>.</p>
+<p>Strong emphasis, aka bold, with <strong>asterisks</strong> or <strong>underscores</strong>.</p>
+<p>Combined emphasis with <strong>asterisks and <em>underscores</em></strong>.</p>
+<p>Strikethrough uses two tildes. <s>Scratch this.</s></p>
+<h3 id="paragraph">3. Paragraphs, line breaks</h3>
+<p>My basic recommendation for learning how line breaks work is to experiment and discover -- hit &lt;Enter&gt; once (i.e., insert one newline), then hit it twice (i.e., insert two newlines), see what happens. You'll soon learn to get what you want. &quot;Markdown Toggle&quot; is your friend.</p>
+<p>Here are some things to try out:</p>
+<pre><code class="hljs language-markdown">Here's a line for us to start with.
+
+This line is separated from the one above by two newlines, so it will be a <span class="hljs-emphasis">*separate paragraph*</span>.
+
+This line is also a separate paragraph, but...
+This line is only separated by a single newline, so it's a separate line in the <span class="hljs-emphasis">*same paragraph*</span>.
+Here's a line for us to start with.
+
+This line is separated from the one above by two newlines, so it will be a separate paragraph.
+
+This line is also begins a separate paragraph, but...
+This line is only separated by a single newline, so it's a separate line in the same paragraph.
+</code></pre>
+<p>Here's a line for us to start with.</p>
+<p>This line is separated from the one above by two newlines, so it will be a <em>separate paragraph</em>.</p>
+<p>This line is also a separate paragraph, but...
+This line is only separated by a single newline, so it's a separate line in the <em>same paragraph</em>.
+Here's a line for us to start with.</p>
+<p>This line is separated from the one above by two newlines, so it will be a separate paragraph.</p>
+<p>This line is also begins a separate paragraph, but...
+This line is only separated by a single newline, so it's a separate line in the same paragraph.</p>
+<h3 id="hrule">4. Horizontal rule</h3>
+<pre><code class="hljs language-markdown">Three or more...
+
+---
+
+Hyphens
+
+<span class="hljs-emphasis">***</span>
+
+Asterisks
+
+<span class="hljs-emphasis">___</span>
+
+Underscores
+</code></pre>
+<p>Three or more...</p>
+<hr>
+<p>Hyphens</p>
+<hr>
+<p>Asterisks</p>
+<hr>
+<p>Underscores</p>
+<h3 id="blockquotes">5. Blockquotes</h3>
+<pre><code class="hljs language-markdown"><span class="hljs-quote">&gt; Blockquotes are very handy in email to emulate reply text.</span>
+<span class="hljs-quote">&gt; This line is part of the same quote.</span>
+
+Quote break.
+
+<span class="hljs-quote">&gt; This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote. </span>
+</code></pre>
+<blockquote>
+<p>Blockquotes are very handy in email to emulate reply text.
+This line is part of the same quote.</p>
+</blockquote>
+<p>Quote break.</p>
+<blockquote>
+<p>This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can <em>put</em> <strong>Markdown</strong> into a blockquote.</p>
+</blockquote>
+<h3 id="links">6. Links</h3>
+<p>Some ways to use links:</p>
+<pre><code class="hljs language-markdown">[<span class="hljs-string">I'm an inline-style link</span>](<span class="hljs-link">https://www.google.com</span>)
+
+[<span class="hljs-string">I'm an inline-style link with title</span>](<span class="hljs-link">https://www.google.com "Google's Homepage"</span>)
+
+[<span class="hljs-string">I'm a reference-style link</span>][<span class="hljs-symbol">Arbitrary case-insensitive reference text</span>]
+
+[<span class="hljs-string">I'm a relative reference to a repository file</span>](<span class="hljs-link">../blob/master/LICENSE</span>)
+
+[<span class="hljs-string">You can use numbers for reference-style link definitions</span>][<span class="hljs-symbol">1</span>]
+
+Or leave it empty and use the [link text itself].
+
+URLs in angle brackets will automatically get turned into links:  
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">http:</span>//<span class="hljs-attr">www.example.com</span>&gt;</span></span>.
+
+Some text to show that the reference links can follow later.
+
+[<span class="hljs-symbol">arbitrary case-insensitive reference text</span>]: <span class="hljs-link">https://www.mozilla.org</span>
+[<span class="hljs-symbol">1</span>]: <span class="hljs-link">http://slashdot.org</span>
+[<span class="hljs-symbol">link text itself</span>]: <span class="hljs-link">http://www.reddit.com</span>
+</code></pre>
+<p><a href="http://www.example.com/">I'm an inline-style link</a></p>
+<p><a href="https://www.google.com" title="Google's Homepage">I'm an inline-style link with title</a></p>
+<p><a href="https://www.mozilla.org">I'm a reference-style link</a></p>
+<p><a href="https://www.mozilla.org">You can use numbers for reference-style link definitions</a></p>
+<p>Or leave it empty and use the <a href="https://www.mozilla.org">link text itself</a>.</p>
+<p>URLs in angle brackets will automatically get turned into links:<br>
+<a href="http://www.example.com">http://www.example.com</a>.</p>
+<p>Some text to show that the reference links can follow later.</p>
+<h3 id="lists">7. Lists</h3>
+<p>(In this example, leading and trailing spaces are shown with with dots: ⋅)</p>
+<pre><code class="hljs language-markdown"><span class="hljs-bullet">1. </span>First ordered list item
+<span class="hljs-bullet">2. </span>Another item
+⋅⋅* Unordered sub-list. 
+<span class="hljs-bullet">1. </span>Actual numbers don't matter, just that it's a number
+⋅⋅1. Ordered sub-list
+<span class="hljs-bullet">4. </span>And another item.
+
+⋅⋅⋅You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).
+
+⋅⋅⋅To have a line break without a paragraph, you will need to use two trailing spaces.⋅⋅
+⋅⋅⋅Note that this line is separate, but within the same paragraph.⋅⋅
+⋅⋅⋅(This is contrary to the typical GFM line break behaviour, where trailing spaces are not required.)
+<span class="hljs-bullet">
+* </span>Unordered list can use asterisks
+<span class="hljs-bullet">- </span>Or minuses
+<span class="hljs-bullet">+ </span>Or pluses
+</code></pre>
+<ol>
+<li>First ordered list item</li>
+<li>Another item</li>
+</ol>
+<ul>
+<li>Unordered sub-list.</li>
+</ul>
+<ol>
+<li>
+<p>Actual numbers don't matter, just that it's a number</p>
+</li>
+<li>
+<p>Ordered sub-list</p>
+</li>
+<li>
+<p>And another item.</p>
+<p>You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).</p>
+<p>To have a line break without a paragraph, you will need to use two trailing spaces.<br>
+Note that this line is separate, but within the same paragraph.<br>
+(This is contrary to the typical GFM line break behaviour, where trailing spaces are not required.)</p>
+</li>
+</ol>
+<ul>
+<li>Unordered list can use asterisks</li>
+</ul>
+<ul>
+<li>Or minuses</li>
+</ul>
+<ul>
+<li>Or pluses</li>
+</ul>
+<h2>Special syntax</h2>
+<h3 id="add-class">1. Add a CSS class and an #id to an element</h3>
+<p>One example add underline to a link (by default, Bootstrap 3 does not use underline for the links - I might change this behaviour though):</p>
+<p><code>[highlight.js](https://highlightjs.org/){.underline}</code></p>
+<p>And the result is: <a href="https://highlightjs.org/" class="underline">highlight.js</a></p>
+<p>It is very important that you should not use whitespace, otherwise it will not work!</p>
+<p>Add an id to an element: <code>Special syntax{id=special}</code>. It converts to <code>&lt;h2 id=&quot;special&quot;&gt;Special syntax&lt;/h2&gt;</code>.</p>
+<h3 id="tables">2. Table with caption</h3>
+<pre><code class="hljs language-markdown">Year | Column 1 | Column 2
+--- | --- | ---
+1993 | 60 | 70
+2007 | 145 | 300
+2010 | 455 | 700
+2018 | 1024 | 576
+[Table 1: Three columns filled with some numbers]
+</code></pre>
+<p>And the result:</p>
+<table>
+<thead>
+<tr>
+<th>Year</th>
+<th>Column 1</th>
+<th>Column 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1993</td>
+<td>60</td>
+<td>70</td>
+</tr>
+<tr>
+<td>2007</td>
+<td>145</td>
+<td>300</td>
+</tr>
+<tr>
+<td>2010</td>
+<td>455</td>
+<td>700</td>
+</tr>
+<tr>
+<td>2018</td>
+<td>1024</td>
+<td>576</td>
+</tr>
+</tbody>
+<caption id="table1threecolumnsfilledwithsomenumbers">Table 1: Three columns filled with some numbers</caption>
+</table>
+<h3 id="images">3. Image with caption</h3>
+<p>Syntax: <code>![caption text](link-to-image)</code></p>
+<p>Example:
+<code>![Figure 1. Interest in static site generators over time (Google Trends)](/assets/images/articles/trend.png)</code></p>
+<figure><img src="/assets/images/articles/trend.png" alt="Figure 1. Interest in static site generators over time (Google Trends)"><figcaption>Figure 1. Interest in static site generators over time (Google Trends)</figcaption></figure>
+<h3 id="highlight">4. Code syntax highlighting</h3>
+<p>This SSG uses the <code>highlight.js</code> for syntax highlighting. Everything is automatic, so you only need to write the code snippets like this:</p>
+<p><code>```` javascript</code></p>
+<p><code>var a = 20</code></p>
+<p><code>function foo (a) {</code></p>
+<p><code>console.log(a)</code></p>
+<p><code>}</code></p>
+<p><code>foo(a)</code></p>
+<p><code>````</code></p>
+<p>...and the result is:</p>
+<pre><code class="hljs language-javascript"><span class="hljs-keyword">var</span> a = <span class="hljs-number">20</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span> (<span class="hljs-params">a</span>) </span>{
+  <span class="hljs-built_in">console</span>.log(a)
+}
+foo(a)
+</code></pre>
+<p>The prebuilt version of <a href="https://highlightjs.org/" class="underline">highlight.js</a> is included to this site which supports 23 commonly used languages. However, you can add support for 179 languages and 79 styles if you need.</p>
+<h2>Source of the general syntax part</h2>
+<ul>
+<li>Adam Pritchard (2017). <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" class="underline">Markdown Cheatsheet</a>.</li>
+</ul>
+
+        </main>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid m0 p0 mt4 bg-neutral-blue">
+  <div class="row mx-responsive m0 p0">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 p0">
+      <section id="contact-me" class="pt0">
+        <h2 class="mt1">Contact Me</h2>
+        <p class="mb2">Hi, my name is <a href="https://github.com/Sirrine-Jonathan" class="underline">András Gulácsi</a>, a UI/UX designer, front-end developer, JAMstack enthusiast. <img class="emoji" src="/assets/images/happy.png" alt="smile"></p>
+        <form name="contact" class="custom-form ws-validate" method="POST" action="/message-sent.html" netlify-honeypot="bot-field"
+          netlify>
+          <p class="hidden">
+            <label>Don’t fill this out if you're human: <input name="bot-field" /></label>
+          </p>
+
+          <div class="form-group mb1">
+            <label for="inputEmail" class="form-label dark-blue">Your email</label>
+            <br>
+            <input type="email" name="name" id="inputEmail" class="border-round input-lg expanded" required="required" placeholder="Your email" />
+          </div>
+
+          <div class="form-group">
+            <label for="message" class="form-label dark-blue">Your message</label>
+            <br>
+            <textarea name="message" id="message" required="required" placeholder="Your message"></textarea>
+          </div>
+
+          <div class="text-left clearfix pb3">
+            <button type="submit" class="float-left btn btn-lg btn-text medium-size uppercase no-visited">Get in touch</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>
+  <div class="footer container-fluid m0 p0 navbar-height" style="line-height: 60px">
+  <div class="row mx-responsive m0 p0">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 p0">
+      <footer>
+        <p class="min-size m0">MIT license &copy;
+          Jonathan Sirrine,
+          2020.
+		</p>
+		<a href="https://www.netlify.com/" target="_blank"><img class="inline-logo m0 mlquarter" src="/assets/images/netlify-logo.png" alt=""></a>
+      </footer>
+    </div>
+  </div>
+</div>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+  crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+  crossorigin="anonymous"></script>
+
+<script src="/assets/js/events.js"></script>
+<script src="/assets/js/js-webshim/minified/polyfiller.js"></script>
+<script src="/assets/js/webshims.js"></script>
+
+<script type="text/javascript">var scrolltotop = { setting: { startline: 100, scrollto: 0, scrollduration: 1e3, fadeduration: [500, 100] }, controlHTML: '<img src="https://i1155.photobucket.com/albums/p559/scrolltotop/arrow35.png" />', controlattrs: { offsetx: 5, offsety: 5 }, anchorkeyword: "#top", state: { isvisible: !1, shouldvisible: !1 }, scrollup: function () { this.cssfixedsupport || this.$control.css({ opacity: 0 }); var t = isNaN(this.setting.scrollto) ? this.setting.scrollto : parseInt(this.setting.scrollto); t = "string" == typeof t && 1 == jQuery("#" + t).length ? jQuery("#" + t).offset().top : 0, this.$body.animate({ scrollTop: t }, this.setting.scrollduration) }, keepfixed: function () { var t = jQuery(window), o = t.scrollLeft() + t.width() - this.$control.width() - this.controlattrs.offsetx, s = t.scrollTop() + t.height() - this.$control.height() - this.controlattrs.offsety; this.$control.css({ left: o + "px", top: s + "px" }) }, togglecontrol: function () { var t = jQuery(window).scrollTop(); this.cssfixedsupport || this.keepfixed(), this.state.shouldvisible = t >= this.setting.startline ? !0 : !1, this.state.shouldvisible && !this.state.isvisible ? (this.$control.stop().animate({ opacity: 1 }, this.setting.fadeduration[0]), this.state.isvisible = !0) : 0 == this.state.shouldvisible && this.state.isvisible && (this.$control.stop().animate({ opacity: 0 }, this.setting.fadeduration[1]), this.state.isvisible = !1) }, init: function () { jQuery(document).ready(function (t) { var o = scrolltotop, s = document.all; o.cssfixedsupport = !s || s && "CSS1Compat" == document.compatMode && window.XMLHttpRequest, o.$body = t(window.opera ? "CSS1Compat" == document.compatMode ? "html" : "body" : "html,body"), o.$control = t('<div id="topcontrol">' + o.controlHTML + "</div>").css({ position: o.cssfixedsupport ? "fixed" : "absolute", bottom: o.controlattrs.offsety, right: o.controlattrs.offsetx, opacity: 0, cursor: "pointer" }).attr({ title: "Vissza a tetejére" }).click(function () { return o.scrollup(), !1 }).appendTo("body"), document.all && !window.XMLHttpRequest && "" != o.$control.text() && o.$control.css({ width: o.$control.width() }), o.togglecontrol(), t('a[href="' + o.anchorkeyword + '"]').click(function () { return o.scrollup(), !1 }), t(window).bind("scroll resize", function (t) { o.togglecontrol() }) }) } }; scrolltotop.init();</script>
+<noscript>Not seeing a <a href="https://www.scrolltotop.com/">Scroll to Top Button</a>? Go to our FAQ page for more
+  info.</noscript>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=YOUR-ID-COMES-HERE"></script>
+<script src="/assets/js/ga.js"></script>
+
+</body>
+
+</html>

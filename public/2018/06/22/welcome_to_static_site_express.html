@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"> 
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+  <link rel="dns-prefetch" href="//fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css?family=DM+Sans:400,400i|Muli:600,700,800|Cousine&display=swap&subset=latin-ext" rel="stylesheet">
+  <title>Welcome to static-site-express. Install guide | wormy the game</title>
+  
+  <!-- MORE METAS ARE COMING HERE -->
+  <meta name="description" content="Wormy the game">
+  <meta property="og:title" content="Welcome to static-site-express. Install guide | wormy the game">
+  <meta property="og:url" content="https://wormy-the-game.netlify.com//2018/06/22/welcome_to_static_site_express.html">
+  <meta property="og:site_name" content="wormy the game">
+  <meta property="og:description" content="static-site-express is a simple Node.js based static site generator that uses EJS and Markdown. Installation and usage guide.">
+  <meta property="og:image" content="https://wormy-the-game.netlify.com//assets/images/articles/node.jpg">
+  <meta property="og:type" content="website">
+
+  <meta property="fb:app_id" content=""/>
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="wormy the game">
+  <meta name="twitter:creator" content="Jonathan Sirrine">
+  <meta name="twitter:title" content="Welcome to static-site-express. Install guide | wormy the game">
+  <meta name="twitter:description" content="static-site-express is a simple Node.js based static site generator that uses EJS and Markdown. Installation and usage guide.">
+  <meta name="twitter:url" content="https://wormy-the-game.netlify.com//2018/06/22/welcome_to_static_site_express.html">
+  <meta name="twitter:image" content="https://wormy-the-game.netlify.com//assets/images/articles/node.jpg">
+  
+  <link rel="canonical" href="https://wormy-the-game.netlify.com//2018/06/22/welcome_to_static_site_express.html">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link href="./../../../assets/stylesheet/main.css" rel="stylesheet" type="text/css">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#2b5797">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet"
+    href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+</head>
+
+<body>
+  <header>
+  <div class="bg-medium-gray-text">
+    <div class="container-fluid m0 p0">
+      <div class="row mx-responsive navbar-height">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 p0 clearfix">
+          <div class="float-left mb0">
+            <a class="" href="/">
+              <img src="/assets/images/logo.png" class="m0 float-left" style="margin-top: 7px" alt="wormy the game logo">
+            </a>
+          </div>
+
+          <div class="float-right d-xs-block d-sm-block d-md-block d-lg-none d-xl-none" style="margin-top: .4rem;">
+            <ul class="nav nav-pills mt0">
+              <li class="nav-item dropdown">
+                <a class="nav-link white-link dropdown-toggle sans-serif medium-size border-neutral-blue no-underline"
+                  data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Menu</a>
+                <div class="dropdown-menu dropdown-menu-right sans-serif ">
+                  <a class="dropdown-item no-underline" href="/#get-started">Get Started</a>
+                  <a class="dropdown-item no-underline" href="/documentation.html">Documentation</a>
+                  <a class="dropdown-item no-underline" href="#contact-me">Contact Me</a>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+        <div class="col-xs-8 col-sm-8 col-md-6 col-lg-8 col-xl-8 p0 clearfix">
+          <div class="float-right" style="float:right !important;">
+            <nav class="mobile-hide-nav" style="margin-top: 15px" role="navigation">
+              <a href="/#get-started" class="medium-size gray-link mr40px pthalf">Get started</a>
+              <a href="/documentation.html" class="medium-size gray-link mr40px pthalf">Documentation</a>
+              <a href="#contact-me" class="medium-size gray-link pthalf">Contact Me</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+  <div class="container-fluid m0 p0">
+    <div class="row mx-responsive m0 p0">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 p0">
+        <main>
+          <p class="small medium-gray-text mb0 mt3">Jun 22, 2018</p>
+<h1 class="no-underline expanded m0 mb3">Welcome to static-site-express. Install guide</h1>
+
+
+          <p>static-site-express is a simple Node.js based static-site generator that uses EJS and Markdown. You can deploy your static site to Netlify.</p>
+<p><em>Post updated on Dec 28, 2018</em></p>
+<p><em>Current version: 4.0.0</em></p>
+<p><strong>Important notes</strong></p>
+<hr>
+<ul>
+<li><code>nodemon</code> not trigger re-build on Linux on file changes (this behavior was experienced on Ubuntu 18.04 LTS Bionic Beaver)</li>
+<li>On Ubuntu, you can run <code>npm run watch-exp</code> command which uses the <a href="https://github.com/paulmillr/chokidar">chokidar</a> package. <em>Experimental.</em></li>
+</ul>
+<h2>Install static-site-express</h2>
+<ul>
+<li>
+<p>Use the 'Deploy to Netlify' button on the <a href="https://static-site-express.netlify.com/">example website</a></p>
+</li>
+<li>
+<p>Or install it from npm package manager:</p>
+</li>
+</ul>
+<p><code>npm install static-site-express</code></p>
+<h2>Build your site locally</h2>
+<p>Build site from <code>./src</code> into <code>./public</code> folder:</p>
+<p><code>npm run build</code></p>
+<p>Serve website on <code>localhost:4000</code>:</p>
+<p><code>npm run serve</code></p>
+<p>Or you can watch for changes and trigger re-build with nodemon:</p>
+<p><code>npm run watch</code></p>
+<p>You need to add <code>sudo</code> before the commands on Linux system.</p>
+<p>Inspect <code>package.json</code> for more info. The <code>./lib</code> folder contains the JavaScript files used for building and serving the website. Check them out.</p>
+<p>The <code>site.config.js</code> file contains some of the site properties (like site title, author, description, social media links etc.) that are used in the EJS partials.</p>
+<h2>Register at Netlify and publish your website</h2>
+<ul>
+<li>
+<p>Register on <a href="https://www.netlify.com/">Netlify</a>, and <a href="https://www.netlify.com/docs/continuous-deployment/">see this tutorial video</a> if you are unfamiliar with the procedure. You can publish your site in a minute.</p>
+</li>
+<li>
+<p>The <code>netlify.toml</code> configuration file contains important properties:</p>
+</li>
+</ul>
+<pre><code class="hljs language-raw">[build]
+  base    = &quot;/&quot;
+  publish = &quot;public&quot;
+  command = &quot;npm run build&quot;
+</code></pre>
+<p>The base path, the build command, and the publish directory. You can keep those settings.</p>
+<p>In the <code>_headers</code> file you can specify the HTTP headers and set Content Security Policy (CSP) rules for the Netlify server. Currently, CSP rules are not set because I don't know which domains you want to whitelist when you create your own website. I recommend you the <a href="https://csp-evaluator.withgoogle.com/">CSP Evaluator by Google</a>.</p>
+<p>The <code>_redirects</code> file is currently empty. When you have a custom domain, you can make a redirect from *.netlify.com to your custom domain.</p>
+<p><code>sitemap.xml</code> is self-explanatory. Currently empty.</p>
+<p>For <a href="https://search.google.com/search-console/about">Google Search Console</a> verification, you should have an HTML file from Google included in the root of your Netlify publish folder (in our case, public). The build script copies this file from <code>./src</code> to <code>./public</code>. Change line 87 in <code>./lib/build.js</code>:</p>
+<pre><code class="hljs language-javascript">ssg.copyRootFile(<span class="hljs-string">'YOUR-GOOGLE-FILENAME-COMES-HERE.html'</span>, srcPath, distPath)
+</code></pre>
+<h2>Alternatively, you can use the Express server app on Heroku (not recommended)</h2>
+<p>A <code>Procfile</code> is already supplied for you with the command to build the site, and after that to run the app server:</p>
+<p><code>web: npm run heroku</code></p>
+<p>You need improve security! I already set security headers with the <code>helmet</code> npm package, just 2 lines:</p>
+<pre><code class="hljs language-javascript"><span class="hljs-comment">// Set Security Headers.</span>
+<span class="hljs-keyword">const</span> helmet = <span class="hljs-built_in">require</span>(<span class="hljs-string">'helmet'</span>)
+app.use(helmet())
+</code></pre>
+<p>Also, you can set Content Security Policy (CSP) rules using the <code>helmet-csp</code> package. This is just an example:</p>
+<p>Keep in mind that the contact form on the example site only works on Netlify!</p>
+<h2>The idea of making a static site generator in Node.js</h2>
+<p>came from this article:</p>
+<ul>
+<li>Douglas Matoso 2017. <a href="https://medium.com/douglas-matoso-english/build-static-site-generator-nodejs-8969ebe34b22">Build a static site generator in 40 lines with Node.js</a>.</li>
+</ul>
+<h2>Q&amp;A</h2>
+<p>If you have a problem or a question about static-site-express, <a href="https://github.com/SalsaBoy990/static-site-express/issues">open an issue</a>.</p>
+
+        </main>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid m0 p0 mt4 bg-neutral-blue">
+  <div class="row mx-responsive m0 p0">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 p0">
+      <section id="contact-me" class="pt0">
+        <h2 class="mt1">Contact Me</h2>
+        <p class="mb2">Hi, my name is <a href="https://github.com/Sirrine-Jonathan" class="underline">András Gulácsi</a>, a UI/UX designer, front-end developer, JAMstack enthusiast. <img class="emoji" src="/assets/images/happy.png" alt="smile"></p>
+        <form name="contact" class="custom-form ws-validate" method="POST" action="/message-sent.html" netlify-honeypot="bot-field"
+          netlify>
+          <p class="hidden">
+            <label>Don’t fill this out if you're human: <input name="bot-field" /></label>
+          </p>
+
+          <div class="form-group mb1">
+            <label for="inputEmail" class="form-label dark-blue">Your email</label>
+            <br>
+            <input type="email" name="name" id="inputEmail" class="border-round input-lg expanded" required="required" placeholder="Your email" />
+          </div>
+
+          <div class="form-group">
+            <label for="message" class="form-label dark-blue">Your message</label>
+            <br>
+            <textarea name="message" id="message" required="required" placeholder="Your message"></textarea>
+          </div>
+
+          <div class="text-left clearfix pb3">
+            <button type="submit" class="float-left btn btn-lg btn-text medium-size uppercase no-visited">Get in touch</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>
+  <div class="footer container-fluid m0 p0 navbar-height" style="line-height: 60px">
+  <div class="row mx-responsive m0 p0">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 p0">
+      <footer>
+        <p class="min-size m0">MIT license &copy;
+          Jonathan Sirrine,
+          2020.
+		</p>
+		<a href="https://www.netlify.com/" target="_blank"><img class="inline-logo m0 mlquarter" src="/assets/images/netlify-logo.png" alt=""></a>
+      </footer>
+    </div>
+  </div>
+</div>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+  crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+  crossorigin="anonymous"></script>
+
+<script src="/assets/js/events.js"></script>
+<script src="/assets/js/js-webshim/minified/polyfiller.js"></script>
+<script src="/assets/js/webshims.js"></script>
+
+<script type="text/javascript">var scrolltotop = { setting: { startline: 100, scrollto: 0, scrollduration: 1e3, fadeduration: [500, 100] }, controlHTML: '<img src="https://i1155.photobucket.com/albums/p559/scrolltotop/arrow35.png" />', controlattrs: { offsetx: 5, offsety: 5 }, anchorkeyword: "#top", state: { isvisible: !1, shouldvisible: !1 }, scrollup: function () { this.cssfixedsupport || this.$control.css({ opacity: 0 }); var t = isNaN(this.setting.scrollto) ? this.setting.scrollto : parseInt(this.setting.scrollto); t = "string" == typeof t && 1 == jQuery("#" + t).length ? jQuery("#" + t).offset().top : 0, this.$body.animate({ scrollTop: t }, this.setting.scrollduration) }, keepfixed: function () { var t = jQuery(window), o = t.scrollLeft() + t.width() - this.$control.width() - this.controlattrs.offsetx, s = t.scrollTop() + t.height() - this.$control.height() - this.controlattrs.offsety; this.$control.css({ left: o + "px", top: s + "px" }) }, togglecontrol: function () { var t = jQuery(window).scrollTop(); this.cssfixedsupport || this.keepfixed(), this.state.shouldvisible = t >= this.setting.startline ? !0 : !1, this.state.shouldvisible && !this.state.isvisible ? (this.$control.stop().animate({ opacity: 1 }, this.setting.fadeduration[0]), this.state.isvisible = !0) : 0 == this.state.shouldvisible && this.state.isvisible && (this.$control.stop().animate({ opacity: 0 }, this.setting.fadeduration[1]), this.state.isvisible = !1) }, init: function () { jQuery(document).ready(function (t) { var o = scrolltotop, s = document.all; o.cssfixedsupport = !s || s && "CSS1Compat" == document.compatMode && window.XMLHttpRequest, o.$body = t(window.opera ? "CSS1Compat" == document.compatMode ? "html" : "body" : "html,body"), o.$control = t('<div id="topcontrol">' + o.controlHTML + "</div>").css({ position: o.cssfixedsupport ? "fixed" : "absolute", bottom: o.controlattrs.offsety, right: o.controlattrs.offsetx, opacity: 0, cursor: "pointer" }).attr({ title: "Vissza a tetejére" }).click(function () { return o.scrollup(), !1 }).appendTo("body"), document.all && !window.XMLHttpRequest && "" != o.$control.text() && o.$control.css({ width: o.$control.width() }), o.togglecontrol(), t('a[href="' + o.anchorkeyword + '"]').click(function () { return o.scrollup(), !1 }), t(window).bind("scroll resize", function (t) { o.togglecontrol() }) }) } }; scrolltotop.init();</script>
+<noscript>Not seeing a <a href="https://www.scrolltotop.com/">Scroll to Top Button</a>? Go to our FAQ page for more
+  info.</noscript>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=YOUR-ID-COMES-HERE"></script>
+<script src="/assets/js/ga.js"></script>
+
+</body>
+
+</html>

@@ -17,6 +17,7 @@ canvas {
 	margin: 0 auto;
 	position: static !important;
 	border-radius: 5px;
+	background: #412222;
 }
 
 .header-inner {
