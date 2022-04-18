@@ -127,17 +127,17 @@
 <p>Note that there is a <code>watch.js</code> and a <code>build-module.js</code> script in lib folder. Those are experimental.</p>
 <h2>site.config.js</h2>
 <p>This script contains the main properties of the website. These properties are automatically pasted into the EJS partials:</p>
-<pre><code class="hljs language-javascript"><span class="hljs-built_in">module</span>.exports = {
+<pre><code class="hljs language-javascript"><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = {
   <span class="hljs-attr">site</span>: {
-    <span class="hljs-attr">url</span>: <span class="hljs-string">'https://static-site-express.netlify.com'</span>,
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;https://static-site-express.netlify.com&#x27;</span>,
     <span class="hljs-attr">title</span>: <span class="hljs-string">`static-site-express`</span>,
-    <span class="hljs-attr">defaultImage</span>: <span class="hljs-string">'/assets/images/static.jpg'</span>,
-    <span class="hljs-attr">author</span>: <span class="hljs-string">'András Gulácsi'</span>,
-    <span class="hljs-attr">quote</span>: <span class="hljs-string">'A Node.js-based static site generator that uses EJS and Markdown'</span>,
-    <span class="hljs-attr">description</span>: <span class="hljs-string">'A Node.js-based static site generator that uses EJS and Markdown'</span>,
-    <span class="hljs-attr">currentYear</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().getFullYear(),
-    <span class="hljs-attr">google_analytics</span>: <span class="hljs-string">'YOUR-ID-COMES-HERE'</span>,
-    <span class="hljs-attr">twitter</span>: <span class="hljs-string">'https://twitter.com/andrasgulacsi'</span>
+    <span class="hljs-attr">defaultImage</span>: <span class="hljs-string">&#x27;/assets/images/static.jpg&#x27;</span>,
+    <span class="hljs-attr">author</span>: <span class="hljs-string">&#x27;András Gulácsi&#x27;</span>,
+    <span class="hljs-attr">quote</span>: <span class="hljs-string">&#x27;A Node.js-based static site generator that uses EJS and Markdown&#x27;</span>,
+    <span class="hljs-attr">description</span>: <span class="hljs-string">&#x27;A Node.js-based static site generator that uses EJS and Markdown&#x27;</span>,
+    <span class="hljs-attr">currentYear</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getFullYear</span>(),
+    <span class="hljs-attr">google_analytics</span>: <span class="hljs-string">&#x27;YOUR-ID-COMES-HERE&#x27;</span>,
+    <span class="hljs-attr">twitter</span>: <span class="hljs-string">&#x27;https://twitter.com/andrasgulacsi&#x27;</span>
   }
 }
 </code></pre>
@@ -186,10 +186,10 @@ static-site-express is a simple Node.js based static-site generator that uses EJ
 <p>Use third party solutions: <a href="https://disqus.com/">Disqus</a>, or <a href="https://developers.facebook.com/docs/plugins/comments/">Facebook Comments</a>.</p>
 <h2>Tracker code</h2>
 <p>Go to Google Analitics and create your tracker code for your site. You need a tracker id.</p>
-<pre><code class="hljs language-javascript"><span class="hljs-built_in">window</span>.dataLayer = <span class="hljs-built_in">window</span>.dataLayer || [];
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">gtag</span>(<span class="hljs-params"></span>)</span>{dataLayer.push(<span class="hljs-built_in">arguments</span>);}
-gtag(<span class="hljs-string">'js'</span>, <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>());
-gtag(<span class="hljs-string">'config'</span>, <span class="hljs-string">'YOUR-ID-COMES-HERE'</span>);
+<pre><code class="hljs language-javascript"><span class="hljs-variable language_">window</span>.<span class="hljs-property">dataLayer</span> = <span class="hljs-variable language_">window</span>.<span class="hljs-property">dataLayer</span> || [];
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">gtag</span>(<span class="hljs-params"></span>){dataLayer.<span class="hljs-title function_">push</span>(<span class="hljs-variable language_">arguments</span>);}
+<span class="hljs-title function_">gtag</span>(<span class="hljs-string">&#x27;js&#x27;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>());
+<span class="hljs-title function_">gtag</span>(<span class="hljs-string">&#x27;config&#x27;</span>, <span class="hljs-string">&#x27;YOUR-ID-COMES-HERE&#x27;</span>);
 </code></pre>
 <p>Also add your id to <code>site.config.js</code>.</p>
 <h2>Netlify Docs</h2>
@@ -240,7 +240,7 @@ gtag(<span class="hljs-string">'config'</span>, <span class="hljs-string">'YOUR-
       <footer>
         <p class="min-size m0">MIT license &copy;
           Jonathan Sirrine,
-          2020.
+          2022.
 		</p>
 		<a href="https://www.netlify.com/" target="_blank"><img class="inline-logo m0 mlquarter" src="/assets/images/netlify-logo.png" alt=""></a>
       </footer>

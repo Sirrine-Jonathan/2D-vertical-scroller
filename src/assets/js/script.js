@@ -17,6 +17,11 @@ app.renderer.resize(800, 472);
 //Add the canvas that Pixi automatically created for you to the HTML document
 document.querySelector('#root').appendChild(app.view);
 
+// start dev tools
+const dev = (text) => document.querySelector('#dev').innerText = text
+dev('Developer Tools')
+// end dev tools
+
 class GameObject {
 	constructor(game){
 		this.game = game;
@@ -107,7 +112,7 @@ class Wormy {
 	constructor(app, game){
 		this.game = game;
 		this.JUMP_VELOCITY = -3.8;
-		this.FALL_TOLERANCE = 3.6;
+		this.FALL_DISTANCE_LIMIT = 30;
 		this.isTarget = true;
 
 		// master state
@@ -208,6 +213,7 @@ class Wormy {
 	}
 
 	updateMotion = () => {
+		dev(this.states.length > 0 ? this.states.join(', ') : 'idle');
 
 		// Apply gravity
 		if (!this.isState('climbing')){
@@ -216,9 +222,9 @@ class Wormy {
 				this.addState('airborne');
 			} else {
 				this.removeState('airborne');
-				if (this.sprite.vy > this.FALL_TOLERANCE){
-					//console.log('die');
-					//this.game.start_debug_circle(this.sprite.x, this.sprite.y);
+				if (this.distance_fell > this.FALL_DISTANCE_LIMIT){
+					console.log('die');
+					this.game.start_debug_circle(this.sprite.x, this.sprite.y);
 				}
 				this.sprite.vy = 0;
 			}
@@ -238,7 +244,7 @@ class Wormy {
 			}
 		} else if (
 			(!this.game.keys['ArrowRight'] && this.game.keys['ArrowLeft']) ||
-			(!this.game.keys['d'] && this.game.keys['a'])	
+			(!this.game.keys['d'] && this.game.keys['a'])
 		){
 			this.direction = 'left';
 			if (!this.isState('airborne') && !this.isState('climbing')){
@@ -263,8 +269,8 @@ class Wormy {
 				this.addState('climbing');
 				this.sprite.vy = -1;
 			} else if (
-				this.canState('airborne') && 
-				!this.isState('climbing') && 
+				this.canState('airborne') &&
+				!this.isState('climbing') &&
 				!this.isState('airborne')
 			) {
 				this.addState('airborne');
@@ -280,14 +286,14 @@ class Wormy {
 			this.removeState('climbing');
 		}
 
-		// stabbing 
+		// stabbing
 		if (this.game.keys[" "] && this.canState('stabbing')){
 			this.addState('stabbing');
 		} else {
 			this.removeState('stabbing');
 		}
 
-		let canMove = this.game.check_bounds({ 
+		let canMove = this.game.check_bounds({
 			x: this.sprite.x + this.sprite.vx,
 			y: this.sprite.y + this.sprite.vy,
 			dir: this.direction
@@ -377,7 +383,7 @@ class Game {
 
 		this.keys = {};
 		this.objects = [];
-		
+
 		function r(){
 			let min = 22;
 			let max = 15;
@@ -441,7 +447,7 @@ class Game {
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
 			*/
 
-			/* level three 
+			/* level three
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
@@ -556,8 +562,8 @@ class Game {
 	}
 
 	loadProgressHandler = (loader, resource) => {
-		//console.log("loading: " + resource.url); 
-		//console.log("progress: " + loader.progress + "%"); 
+		//console.log("loading: " + resource.url);
+		//console.log("progress: " + loader.progress + "%");
 	}
 
 	addObject = (obj) => {
@@ -599,7 +605,7 @@ class Game {
 			let tile_tr = this.tile_coordinates(obj, 'top-right');
 			let tile_br = this.tile_coordinates(obj, 'bottom-right');
 			if (
-				!(this.map[tile_tr.row] && this.map[tile_tr.row][tile_tr.col]) || 
+				!(this.map[tile_tr.row] && this.map[tile_tr.row][tile_tr.col]) ||
 				!(this.map[tile_br.row] && this.map[tile_br.row][tile_br.col])
 			){
 				return false;
@@ -691,7 +697,7 @@ class Game {
 
 	moveCamera = (direction) => {
 		switch (direction){
-			case 'UP': 
+			case 'UP':
 				if ((this.map_container.y + 1) <= (this.TILE_SIZE * this.map.length) - (this.TILE_SIZE * this.SCREEN_ROWS)){
 					this.objects.forEach((obj) => {
 						obj.sprite.y += 1;
@@ -723,7 +729,7 @@ class Game {
 	gameLoop = (delta) => {
 		this.objects.forEach((obj) => {
 			obj.update(delta);
-			
+
 			if (obj.isTarget){
 				const PADDING = 4;
 				const UPPER_BOUND = this.TILE_SIZE * PADDING;
