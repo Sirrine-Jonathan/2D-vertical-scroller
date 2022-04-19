@@ -42,7 +42,7 @@
     "helmet": "^3.12.1",
     "helmet-csp": "^2.7.0",
     "highlightjs": "^9.10.0",
-    "markdown-it": "^8.4.1",
+    "markdown-it": "^12.3.2",
     "markdown-it-attrs": "^2.2.0",
     "markdown-it-highlightjs": "^3.0.0",
     "markdown-it-implicit-figures": "^0.9.0",
