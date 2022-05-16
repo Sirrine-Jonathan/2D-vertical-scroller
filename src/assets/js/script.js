@@ -112,12 +112,14 @@ class Wormy {
 	constructor(app, game){
 		this.game = game;
 		this.JUMP_VELOCITY = -3.8;
-		this.FALL_DISTANCE_LIMIT = 30;
+		this.fall_start = null;
+		this.FALL_DISTANCE_LIMIT = 32 * 2;
 		this.isTarget = true;
 
 		// master state
 		this.states = ['airborne'];
 		this.possible_states = {
+			dead: ['moving', 'airborne', 'climbing', 'stabbing'],
 			moving: [],
 			airborne: [],
 			climbing: ['moving', 'stabbing'],
@@ -213,18 +215,26 @@ class Wormy {
 	}
 
 	updateMotion = () => {
-		dev(this.states.length > 0 ? this.states.join(', ') : 'idle');
+		if (this.isState('dead')) return;
 
 		// Apply gravity
 		if (!this.isState('climbing')){
 			if (this.game.should_apply_gravity(this.sprite)){
 				this.game.apply_gravity(this.sprite);
 				this.addState('airborne');
+				if (this.fall_start === null){
+					this.fall_start = this.sprite.y
+				}
+				this.distance_fell = this.sprite.y- this.fall_start;
 			} else {
+				this.fall_start = null;
 				this.removeState('airborne');
 				if (this.distance_fell > this.FALL_DISTANCE_LIMIT){
-					console.log('die');
-					this.game.start_debug_circle(this.sprite.x, this.sprite.y);
+					this.addState('dead');
+					dev("YOU DIED")
+					setTimeout(() => {
+						this.game.start()
+					}, 1000 * 5);
 				}
 				this.sprite.vy = 0;
 			}
@@ -374,6 +384,11 @@ class Wormy {
 
 class Game {
 	constructor(){
+		this.start();
+	}
+
+	start = () => {
+		dev("STARTING GAME");
 		this.TERMINAL_VELOCITY = 3.7;
 		this.GRAVITY = 0.2;
 		this.TILE_SIZE = 32;
@@ -407,7 +422,7 @@ class Game {
 			[23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23],
 			[23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23],
 			[23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23],
-			[27,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+			[27,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,27,10,10,10],
 
 			/* level five */
 			/*
@@ -458,12 +473,12 @@ class Game {
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
 			[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
 			*/
-			[13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
-			[13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],
-			[13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,18,22,22,22,22,22,22],
-			[13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22,22],
-			[13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22,22,22,22],
-			[13,22,22,22,15,17,22,15,16,16,17,22,22,19,16,16,16,17,13,15,16,16,17,22,22],
+			[13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,22],
+			[13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,18,22,22,13,22,22,22],
+			[13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,13,22,22,22],
+			[13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,13,22,22,22],
+			[13,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,13,22,22,13,22,22,22],
+			[13,22,22,22,15,17,22,15,16,16,17,22,22,19,16,16,16,17,13,15,16,15,17,22,22],
 
 			/* level two */
 			[15,16,16,21,22,22,22,22,22,22,22,22,22,13,22,22,22,22,13,22,22,22,22,22,22],
@@ -591,7 +606,15 @@ class Game {
 		this.map_container.y = this.initialY;
 
 		// start loop
-		app.ticker.add(delta => this.gameLoop(delta));
+		this.startLoop()
+	}
+
+	startLoop = () => {
+		app.ticker.add(this.gameLoop);
+	}
+
+	stopLoop = () => {
+		app.ticker.remove(this.gameLoop);
 	}
 
 	apply_gravity = (obj) => {
@@ -684,8 +707,10 @@ class Game {
 		return can;
 	}
 
-	reset = () => {
-		// reset game after death
+	restart = () => {
+		this.stopLoop()
+		// register loop to go back to top of screen,
+		// once at top, stop restart loop and start game loop
 	}
 
 	setTarget = (game_obj) => {
@@ -720,8 +745,9 @@ class Game {
 		// add objects
 		let objects = [
 			new Wormy(app, this),
-			new Roach(app, this, { x: 32 * 13, y: 32 * 13}),
-			new Roach(app, this, { x: 32 * 3, y: 32 * 8})
+			new Roach(app, this, { x: 32 * 8, y: 32 * 7}),
+			new Roach(app, this, { x: 32 * 10, y: 32 * 12}),
+			new Roach(app, this, { x: 32 * 18, y: 32 * 6}),
 		];
 		this.addObject(objects);
 	}
